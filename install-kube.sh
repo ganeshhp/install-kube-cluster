@@ -75,7 +75,6 @@ mkdir -p $HOME/.kube
 sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
 sudo chown $(id -u):$(id -g) $HOME/.kube/config
 
-
 tail -n -2 outfile | tee shell.sh
 sudo  chmod +x shell.sh
 YELLOW='\033[0;33m'
@@ -83,4 +82,3 @@ YELLOW='\033[0;33m'
 echo -e "\n"
 echo -e "\n"
 echo -e "${YELLOW} To add the worker Node to the Cluster, execute the 'shell.sh' file on worker node in sudo mode. "
-
