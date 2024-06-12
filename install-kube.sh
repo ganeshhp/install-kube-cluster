@@ -68,3 +68,7 @@ sudo apt-mark hold kubelet kubeadm kubectl
 ### initiate cluster
 ipaddr=$(hostname --all-ip-addresses)
 kubeadm init --apiserver-advertise-address=$ipaddr --ignore-preflight-errors=all
+
+mkdir -p $HOME/.kube
+sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+sudo chown $(id -u):$(id -g) $HOME/.kube/config
