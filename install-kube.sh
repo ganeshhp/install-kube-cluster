@@ -67,4 +67,20 @@ sudo apt-mark hold kubelet kubeadm kubectl
 
 ### initiate cluster
 ipaddr=$(hostname --all-ip-addresses)
-kubeadm init --apiserver-advertise-address=$ipaddr --ignore-preflight-errors=all
+sudo kubeadm init --apiserver-advertise-address=$ipaddr --ignore-preflight-errors=all | tee outfile
+
+### add kubectl config file
+
+mkdir -p $HOME/.kube
+sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+
+tail -n -2 outfile | tee shell.sh
+sudo  chmod +x shell.sh
+YELLOW='\033[0;33m'
+
+echo -e "\n"
+echo -e "\n"
+echo -e "${YELLOW} To add the worker Node to the Cluster, execute the 'shell.sh' file on worker node in sudo mode. "
+
