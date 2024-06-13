@@ -1,10 +1,12 @@
 ### script to install containerd and kubernetes services
+YELLOW='\033[0;33m'
 
 sudo apt-get update
 sudo swapoff -a
 sudo sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
 
-#### Load the required kernel modules on all nodes
+echo -r "${YELLOW} Load the required kernel modules on the node"
+sleep 3
 
 sudo tee /etc/modules-load.d/containerd.conf <<EOF
 overlay
@@ -13,7 +15,8 @@ EOF
 sudo modprobe overlay
 sudo modprobe br_netfilter
 
-### Configure the critical kernel parameters for Kubernetes using the following
+echo -e "${YELLOW} Configure the critical kernel parameters for Kubernetes"
+sleep 5
 
 sudo tee /etc/sysctl.d/kubernetes.conf <<EOF
 net.bridge.bridge-nf-call-ip6tables = 1
@@ -66,6 +69,9 @@ sudo apt install -y kubelet kubeadm kubectl
 sudo apt-mark hold kubelet kubeadm kubectl
 
 ### initiate cluster
+echo -e "${YELLOW} Initialize the Cluster on the Control-Plane Node"
+sleep 5
+
 ipaddr=$(hostname --all-ip-addresses)
 sudo kubeadm init --apiserver-advertise-address=$ipaddr --ignore-preflight-errors=all | tee outfile
 
@@ -76,14 +82,18 @@ sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
 sudo chown $(id -u):$(id -g) $HOME/.kube/config
 
 ## install network add-on (calico) on cluster node as daemonset.
+echo -e "${YELLOW} Let's add Network Add-On on the cluster nodes. This will create a Daemonset in the cluster"
+sleep 5
 
 kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.28.0/manifests/calico.yaml
 
 ## xtract cluster join command from cluster install logs
 tail -n -2 outfile | tee shell.sh
 sudo  chmod +x shell.sh
-YELLOW='\033[0;33m'
 
 echo -e "\n"
 echo -e "\n"
-echo -e "${YELLOW} To add the worker Node to the Cluster, execute the 'shell.sh' file on worker node in sudo mode. "
+echo -e "${YELLOW} To add the worker Node to the Cluster, execute the 'shell.sh' file on worker node in sudo mode."
+echo -e "\n"
+echo -e "\n"
+
