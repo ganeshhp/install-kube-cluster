@@ -75,6 +75,11 @@ mkdir -p $HOME/.kube
 sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
 sudo chown $(id -u):$(id -g) $HOME/.kube/config
 
+## install network add-on (calico) on cluster node as daemonset.
+
+kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.28.0/manifests/calico.yaml
+
+## xtract cluster join command from cluster install logs
 tail -n -2 outfile | tee shell.sh
 sudo  chmod +x shell.sh
 YELLOW='\033[0;33m'
