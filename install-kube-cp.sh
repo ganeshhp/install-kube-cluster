@@ -1,11 +1,11 @@
 ### script to install containerd and kubernetes services
-YELLOW='\033[0;33m'
+## YELLOW='\033[0;33m'
 
 sudo apt-get update
 sudo swapoff -a
 sudo sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
 
-echo -r "${YELLOW} Load the required kernel modules on the node"
+##echo -r "${YELLOW} Load the required kernel modules on the node"
 sleep 3
 
 sudo tee /etc/modules-load.d/containerd.conf <<EOF
@@ -15,7 +15,7 @@ EOF
 sudo modprobe overlay
 sudo modprobe br_netfilter
 
-echo -e "${YELLOW} Configure the critical kernel parameters for Kubernetes"
+## echo -e "${YELLOW} Configure the critical kernel parameters for Kubernetes"
 sleep 5
 
 sudo tee /etc/sysctl.d/kubernetes.conf <<EOF
@@ -69,11 +69,13 @@ sudo apt install -y kubelet kubeadm kubectl
 sudo apt-mark hold kubelet kubeadm kubectl
 
 ### initiate cluster
-echo -e "${YELLOW} Initialize the Cluster on the Control-Plane Node"
+echo -e "Initialize the Cluster on the Control-Plane Node"
 sleep 5
 
-ipaddr=$(hostname --all-ip-addresses)
-sudo kubeadm init --apiserver-advertise-address=$ipaddr --ignore-preflight-errors=all | tee outfile
+#ipaddr=$(hostname --all-ip-addresses)
+#sudo kubeadm init --apiserver-advertise-address=$ipaddr --ignore-preflight-errors=all | tee outfile
+
+sudo kubeadm init --ignore-preflight-errors=all
 
 ### add kubectl config file
 
@@ -82,7 +84,8 @@ sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
 sudo chown $(id -u):$(id -g) $HOME/.kube/config
 
 ## install network add-on (calico) on cluster node as daemonset.
-echo -e "${YELLOW} Let's add Network Add-On on the cluster nodes. This will create a Daemonset in the cluster"
+## echo -e "${YELLOW} Let's add Network Add-On on the cluster nodes. This will create a Daemonset in the cluster"
+
 sleep 5
 
 kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.28.0/manifests/calico.yaml
@@ -90,6 +93,8 @@ kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.28.0/
 ## xtract cluster join command from cluster install logs
 tail -n -2 outfile | tee shell.sh
 sudo  chmod +x shell.sh
+
+YELLOW='\033[0;33m'
 
 echo -e "\n"
 echo -e "\n"
